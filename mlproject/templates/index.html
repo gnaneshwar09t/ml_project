@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tumor Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #content {
+            text-align: center;
+        }
+        h1 {
+            font-size: 38px;
+            color: #333;
+            
+        }
+        #uploadForm {
+            margin-top: 20px;
+        }
+        #uploadedImage {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+            display: none; /* Hide the image by default */
+        }
+        #result {
+            margin-top: 20px;
+            color: #333;
+        }
+        .predicted-tumor {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .consult-doctor {
+            font-size: 28px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <h1>Tumor Detection</h1>
+        <form id="uploadForm" method="post" action="{% url 'predict_tumor' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="image" required>
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="result">
+            {% if predicted_class_label %}
+                <p class="predicted-tumor">Predicted Tumor Type: {{ predicted_class_label }}</p>
+                {% if predicted_class_label != 'no-tumor' %}
+                    <p class="consult-doctor">Please consult a doctor immediately!</p>
+                {% endif %}
+                <img id="uploadedImage" src="" alt="Uploaded Image">
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Show uploaded image after submission
+        window.onload = function() {
+            var uploadForm = document.getElementById('uploadForm');
+            var uploadedImage = document.getElementById('uploadedImage');
+    
+            uploadForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                var imageInput = document.querySelector('input[type="file"]');
+                uploadedImage.src = URL.createObjectURL(imageInput.files[0]);
+                uploadedImage.style.display = 'block';
+            });
+        };
+    </script>
+</body>
+</html>
